@@ -16,3 +16,4 @@ function setImage() {
         context.drawImage(spritesImg, 0, 0, spritesImg.width, spritesImg.height, 0, 0, spritesImg.width * ratio, spritesImg.height * ratio);
     };
 }
+// TODO: prettier files
