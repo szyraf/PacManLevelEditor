@@ -2,12 +2,20 @@
     margin: 0;
     padding: 0;
     font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+    color: white;
 }
 
 body {
     background-color: black;
 }
 
-canvas {
-    /* border: 1px solid black; */
+p {
+    text-align: center;
+    margin: 10px;
+}
+
+#items {
+    margin: 10px;
+    visibility: hidden;
+    cursor: pointer;
 }
