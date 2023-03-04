@@ -2,6 +2,7 @@ interface Dimensions {
     spriteSize: number
     borderSize: number
     borderColor?: string
+    borderActiveColor?: string
     spritesInX: number
     spritesInY: number
     width: number
@@ -21,11 +22,12 @@ export const CANVAS: Dimensions = {
     spriteSize: 25,
     borderSize: 2,
     borderColor: '#ffffff',
-    spritesInX: 32,
-    spritesInY: 20,
+    borderActiveColor: '#ff0000',
+    spritesInX: 16,
+    spritesInY: 40,
     width: 0,
     height: 0
 }
 
-CANVAS.width = CANVAS.spriteSize * CANVAS.spritesInX + CANVAS.borderSize * (CANVAS.spritesInX + 1)
-CANVAS.height = CANVAS.spriteSize * CANVAS.spritesInY + CANVAS.borderSize * (CANVAS.spritesInY + 1)
+CANVAS.width = CANVAS.spriteSize * CANVAS.spritesInX + CANVAS.borderSize * (CANVAS.spritesInX * 2 + 1)
+CANVAS.height = CANVAS.spriteSize * CANVAS.spritesInY + CANVAS.borderSize * (CANVAS.spritesInY * 2 + 1)
