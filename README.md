@@ -10,6 +10,11 @@ generate node_modules:
 
 ts -> js :
 `npm install -g typescript`
-`tsc test.ts -w`
+`tsc ts/main.ts -w --outFile static/scripts/main.js --module amd`
 
-and open `index.html`
+run html file:
+`index.html`
+
+or run server:
+`nodemon server.js`
+and open `localhost:3000`
