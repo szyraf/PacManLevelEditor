@@ -1,17 +1,17 @@
-// TODO: prettier files
+// TODO: make classes
 
 let canvas: any = document.getElementById('spritesCanvas')
 let ctx = canvas.getContext('2d')
 
-import { IMAGE_SIZES, CANVAS_SIZES } from './interfaces'
+import { IMAGE, CANVAS } from './dimensions'
 
 setupCanvas()
 
 function setupCanvas() {
-    console.log(IMAGE_SIZES)
+    console.log(IMAGE)
 
-    canvas.width = IMAGE_SIZES.ImageWidth
-    canvas.height = IMAGE_SIZES.ImageHeight
+    canvas.width = IMAGE.width
+    canvas.height = IMAGE.height
     setImage()
 }
 
@@ -19,22 +19,10 @@ function setImage() {
     let spritesImg = new Image()
     spritesImg.src = 'sprites.png'
     spritesImg.onload = function () {
-        let hRatio: number = canvas.width / spritesImg.width
-        let vRatio: number = canvas.height / spritesImg.height
-        let ratio: number = Math.min(hRatio, vRatio)
-
-        // context.drawImage(spritesImg, 0, 0, spritesImg.width, spritesImg.height, 0, 0, spritesImg.width * ratio, spritesImg.height * ratio)
-        // draw only first square
-        let w = 47
-        let h = 25
-
-        // context.drawImage(spritesImg, 0, 0, w, w, 0, 0, w * ratio, w * ratio)
-        ctx.drawImage(spritesImg, 1, 1, w, w, 1, 1, 25, 25)
-
-        // ctx.drawImage(spritesImg, CANVAS_SIZES.CanvasBorderSize, CANVAS_SIZES.CanvasBorderSize, CANVAS_SIZES.CanvasSpriteSize, CANVAS_SIZES.CanvasSpriteSize, IMAGE_SIZES.ImageBorderSize, IMAGE_SIZES.ImageBorderSize, IMAGE_SIZES.ImageSpriteSize, IMAGE_SIZES.ImageSpriteSize)
-
-        ctx.setLineDash([1])
-        ctx.strokeStyle = '#ffff00'
-        ctx.strokeRect(0, 0, 27, 27)
+        ctx.drawImage(spritesImg, IMAGE.borderSize, IMAGE.borderSize, IMAGE.spriteSize, IMAGE.spriteSize, CANVAS.borderSize, CANVAS.borderSize, CANVAS.spriteSize, CANVAS.spriteSize)
+        ctx.setLineDash([2, 2])
+        ctx.strokeStyle = '#ffffff'
+        ctx.lineWidth = CANVAS.borderSize
+        ctx.strokeRect(0, 0, CANVAS.spriteSize + CANVAS.borderSize * 2, CANVAS.spriteSize + CANVAS.borderSize * 2)
     }
 }
