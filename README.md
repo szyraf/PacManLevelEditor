@@ -16,5 +16,5 @@ run html file:<br>
 `index.html`
 
 or run server:<br>
-`nodemon server.js`
+`nodemon server.js`<br>
 and open `localhost:3000`
