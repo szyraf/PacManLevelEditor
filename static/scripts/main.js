@@ -81,7 +81,8 @@ define("Canvas", ["require", "exports", "dimensions", "SpritesImage"], function 
                 var x = Math.floor(pos.x / (dimensions_1.CANVAS.spriteSize + dimensions_1.CANVAS.borderSize * 2));
                 var y = Math.floor(pos.y / (dimensions_1.CANVAS.spriteSize + dimensions_1.CANVAS.borderSize * 2));
                 if (x !== _this.prevMouseX || y !== _this.prevMouseY) {
-                    _this.drawImage(x, y);
+                    clearTimeout(_this.timeout);
+                    _this.timeout = setTimeout(function () { return _this.drawImage(x, y); }, 0);
                     _this.prevMouseX = x;
                     _this.prevMouseY = y;
                 }
@@ -95,7 +96,6 @@ define("Canvas", ["require", "exports", "dimensions", "SpritesImage"], function 
                 var pos = _this.getMousePos(_this.canvas, e);
                 var x = Math.floor(pos.x / (dimensions_1.CANVAS.spriteSize + dimensions_1.CANVAS.borderSize * 2));
                 var y = Math.floor(pos.y / (dimensions_1.CANVAS.spriteSize + dimensions_1.CANVAS.borderSize * 2));
-                console.log('Click! x: ' + x + ', y: ' + y);
             };
             this.CANVAS_SIZE = CANVAS_SIZE;
             this.canvas = document.getElementById(canvasId);
@@ -143,6 +143,12 @@ define("Canvas", ["require", "exports", "dimensions", "SpritesImage"], function 
         };
         Canvas.prototype.setPrevMouseY = function (prevMouseY) {
             this.prevMouseY = prevMouseY;
+        };
+        Canvas.prototype.getTimeout = function () {
+            return this.timeout;
+        };
+        Canvas.prototype.setTimeout = function (timeout) {
+            this.timeout = timeout;
         };
         Canvas.prototype.getMousePos = function (canvas, evt) {
             var rect = canvas.getBoundingClientRect();

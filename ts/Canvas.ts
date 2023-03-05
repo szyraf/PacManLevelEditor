@@ -8,6 +8,7 @@ interface CanvasElement {
     getSpritesImg(): HTMLImageElement
     getPrevMouseX(): number
     getPrevMouseY(): number
+    getTimeout(): number
 }
 
 export class Canvas implements CanvasElement {
@@ -17,6 +18,7 @@ export class Canvas implements CanvasElement {
     protected spritesImg: HTMLImageElement
     protected prevMouseX: number = -1
     protected prevMouseY: number = -1
+    protected timeout: number
 
     public getCanvasSize(): CanvasSize {
         return this.CANVAS_SIZE
@@ -66,6 +68,14 @@ export class Canvas implements CanvasElement {
         this.prevMouseY = prevMouseY
     }
 
+    public getTimeout(): number {
+        return this.timeout
+    }
+
+    public setTimeout(timeout: number) {
+        this.timeout = timeout
+    }
+
     constructor(canvasId: string, CANVAS_SIZE: CanvasSize) {
         this.CANVAS_SIZE = CANVAS_SIZE
         this.canvas = document.getElementById(canvasId) as HTMLCanvasElement
@@ -85,7 +95,8 @@ export class Canvas implements CanvasElement {
         let y: number = Math.floor(pos.y / (CANVAS.spriteSize + CANVAS.borderSize * 2))
 
         if (x !== this.prevMouseX || y !== this.prevMouseY) {
-            this.drawImage(x, y)
+            clearTimeout(this.timeout)
+            this.timeout = setTimeout(() => this.drawImage(x, y), 0)
             this.prevMouseX = x
             this.prevMouseY = y
         }
@@ -101,8 +112,6 @@ export class Canvas implements CanvasElement {
         let pos = this.getMousePos(this.canvas, e)
         let x: number = Math.floor(pos.x / (CANVAS.spriteSize + CANVAS.borderSize * 2))
         let y: number = Math.floor(pos.y / (CANVAS.spriteSize + CANVAS.borderSize * 2))
-
-        console.log('Click! x: ' + x + ', y: ' + y)
     }
 
     protected getMousePos(canvas: HTMLCanvasElement, evt: MouseEvent) {
