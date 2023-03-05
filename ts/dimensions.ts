@@ -1,33 +1,58 @@
-interface Dimensions {
+interface ImageSettings {
     spriteSize: number
     borderSize: number
-    borderColor?: string
-    borderActiveColor?: string
-    spritesInX: number
-    spritesInY: number
+    numberOfSpritesX: number
+    numberOfSpritesY: number
     width: number
     height: number
 }
 
-export const IMAGE: Dimensions = {
+export const IMAGE: ImageSettings = {
     spriteSize: 47,
     borderSize: 1,
-    spritesInX: 32,
-    spritesInY: 20,
+    numberOfSpritesX: 32,
+    numberOfSpritesY: 20,
     width: 1536,
     height: 960
 }
 
-export const CANVAS: Dimensions = {
+interface CanvasSettings {
+    spriteSize: number
+    borderSize: number
+    borderDefaultColor: string
+    borderHighlightColor: string
+}
+
+export const CANVAS: CanvasSettings = {
     spriteSize: 25,
     borderSize: 2,
-    borderColor: '#ffffff',
-    borderActiveColor: '#ff0000',
-    spritesInX: 16,
-    spritesInY: 40,
+    borderDefaultColor: '#ffffff',
+    borderHighlightColor: '#ff0000'
+}
+
+export interface CanvasSize {
+    numberOfSpritesX: number
+    numberOfSpritesY: number
+    width: number
+    height: number
+}
+
+export const SPRITES_CANVAS: CanvasSize = {
+    numberOfSpritesX: 16,
+    numberOfSpritesY: 40,
     width: 0,
     height: 0
 }
 
-CANVAS.width = CANVAS.spriteSize * CANVAS.spritesInX + CANVAS.borderSize * (CANVAS.spritesInX * 2 + 1)
-CANVAS.height = CANVAS.spriteSize * CANVAS.spritesInY + CANVAS.borderSize * (CANVAS.spritesInY * 2 + 1)
+SPRITES_CANVAS.width = CANVAS.spriteSize * SPRITES_CANVAS.numberOfSpritesX + CANVAS.borderSize * (SPRITES_CANVAS.numberOfSpritesX * 2)
+SPRITES_CANVAS.height = CANVAS.spriteSize * SPRITES_CANVAS.numberOfSpritesY + CANVAS.borderSize * (SPRITES_CANVAS.numberOfSpritesY * 2)
+
+export const MAP_CANVAS: CanvasSize = {
+    numberOfSpritesX: 44,
+    numberOfSpritesY: 38,
+    width: 0,
+    height: 0
+}
+
+MAP_CANVAS.width = CANVAS.spriteSize * MAP_CANVAS.numberOfSpritesX + CANVAS.borderSize * (MAP_CANVAS.numberOfSpritesX * 2)
+MAP_CANVAS.height = CANVAS.spriteSize * MAP_CANVAS.numberOfSpritesY + CANVAS.borderSize * (MAP_CANVAS.numberOfSpritesY * 2)

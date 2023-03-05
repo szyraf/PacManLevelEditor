@@ -12,10 +12,20 @@ body {
 p {
     text-align: center;
     margin: 10px;
+    user-select: none;
 }
 
-#items {
+.container {
+    display: flex;
+}
+
+#items,
+#map {
     margin: 10px;
     visibility: hidden;
+}
+
+#spritesCanvas,
+#mapCanvas {
     cursor: pointer;
 }
