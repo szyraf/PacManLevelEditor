@@ -514,6 +514,8 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                 }
                 if (!isEmpty) {
                     _this.pasteMode = true;
+                    _this.selectionMap = _this.createEmptyMap();
+                    _this.invokeDrawImage();
                 }
             };
             _this.save = function () {
