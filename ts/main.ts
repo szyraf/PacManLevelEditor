@@ -91,3 +91,13 @@ document.getElementById('dialog-load').addEventListener('click', () => {
     mapCanvas.load()
     hideDialog()
 })
+
+document.addEventListener(
+    'keydown',
+    function (e) {
+        if (e.key === 's' && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
+            e.preventDefault()
+        }
+    },
+    false
+)

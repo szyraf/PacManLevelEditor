@@ -89,12 +89,6 @@ define("Canvas", ["require", "exports", "dimensions", "SpritesImage"], function 
                     _this.prevMouseY = y;
                 }
             };
-            this.save = function () {
-                alert('save');
-            };
-            this.load = function () {
-                alert('load');
-            };
             this.mouseLeave = function (e) {
                 _this.prevMouseX = -1;
                 _this.prevMouseY = -1;
@@ -522,6 +516,38 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                     _this.pasteMode = true;
                 }
             };
+            _this.save = function () {
+                _this.saveData(JSON.stringify(_this.map), 'map.json', 'application/json');
+            };
+            _this.saveData = function (data, filename, type) {
+                var blob = new Blob([data], { type: type });
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            };
+            _this.load = function () {
+                var THIS = _this;
+                var input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = function (e) {
+                    var file = e.target.files[0];
+                    var reader = new FileReader();
+                    reader.readAsText(file);
+                    reader.onload = function () {
+                        THIS.map = JSON.parse(reader.result);
+                        THIS.archivedMaps = THIS.createEmptyMap();
+                        THIS.archivedMapsIndex = -1;
+                        THIS.selectionMap = THIS.createEmptyMap();
+                        THIS.invokeDrawImage();
+                    };
+                };
+                input.click();
+            };
             _this.keyUp = function (e) {
                 if (e.keyCode === 17 || e.metaKey) {
                     _this.keyboard.ctrl = false;
@@ -613,7 +639,6 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                     if (this.selectionMap[y][x] === 1) {
                         active = true;
                     }
-                    // use this.pasteTopLeftCorner and this.prevMouseX, this.prevMouseY
                     if (this.pasteMode) {
                         active = false;
                     }
@@ -743,4 +768,9 @@ define("main", ["require", "exports", "SpritesCanvas", "MapCanvas", "dimensions"
         exports.mapCanvas.load();
         hideDialog();
     });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 's' && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
+            e.preventDefault();
+        }
+    }, false);
 });

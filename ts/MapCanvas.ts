@@ -136,8 +136,6 @@ export class MapCanvas extends Canvas {
                     active = true
                 }
 
-                // use this.pasteTopLeftCorner and this.prevMouseX, this.prevMouseY
-
                 if (this.pasteMode) {
                     active = false
                 }
@@ -417,6 +415,45 @@ export class MapCanvas extends Canvas {
         if (!isEmpty) {
             this.pasteMode = true
         }
+    }
+
+    public save = () => {
+        this.saveData(JSON.stringify(this.map), 'map.json', 'application/json')
+    }
+
+    private saveData = (data: string, filename: string, type: string) => {
+        const blob = new Blob([data], { type: type })
+        const url = URL.createObjectURL(blob)
+
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+    }
+
+    public load = () => {
+        let THIS = this
+        let input = document.createElement('input')
+        input.type = 'file'
+        input.accept = '.json'
+
+        input.onchange = (e: any) => {
+            let file = e.target.files[0]
+            const reader = new FileReader()
+            reader.readAsText(file)
+
+            reader.onload = function () {
+                THIS.map = JSON.parse(reader.result as string)
+                THIS.archivedMaps = THIS.createEmptyMap()
+                THIS.archivedMapsIndex = -1
+                THIS.selectionMap = THIS.createEmptyMap()
+                THIS.invokeDrawImage()
+            }
+        }
+
+        input.click()
     }
 
     protected keyUp = (e: KeyboardEvent) => {

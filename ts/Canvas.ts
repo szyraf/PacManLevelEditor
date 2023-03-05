@@ -144,14 +144,6 @@ export class Canvas implements CanvasElement {
         )
     }
 
-    public save = () => {
-        alert('save')
-    }
-
-    public load = () => {
-        alert('load')
-    }
-
     protected mouseLeave = (e: MouseEvent) => {
         this.prevMouseX = -1
         this.prevMouseY = -1
