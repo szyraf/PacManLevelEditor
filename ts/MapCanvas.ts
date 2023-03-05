@@ -414,6 +414,8 @@ export class MapCanvas extends Canvas {
 
         if (!isEmpty) {
             this.pasteMode = true
+            this.selectionMap = this.createEmptyMap()
+            this.invokeDrawImage()
         }
     }
 

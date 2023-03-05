@@ -18,3 +18,8 @@ run html file:<br>
 or run server:<br>
 `nodemon server.js`<br>
 and open `localhost:3000`
+
+## Screenshots
+
+<img src="./screenshots/s1.png"/><br>
+<img src="./screenshots/s2.png"/>
