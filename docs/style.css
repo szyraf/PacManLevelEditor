@@ -1,0 +1,81 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+    color: white;
+}
+
+body {
+    background-color: black;
+}
+
+p {
+    text-align: center;
+    margin: 10px;
+    user-select: none;
+}
+
+.container {
+    display: flex;
+}
+
+#items,
+#map {
+    margin: 10px;
+    visibility: hidden;
+}
+
+#spritesCanvas,
+#mapCanvas {
+    cursor: pointer;
+}
+
+#dialog {
+    width: 300px;
+    height: 400px;
+    position: fixed;
+    margin-left: -150px;
+    margin-top: -200px;
+    background-color: white;
+    border: 1px solid black;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    visibility: hidden;
+    z-index: 3;
+}
+
+.dialog-item {
+    color: black;
+    width: auto;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dialog-item:hover {
+    background-color: gray;
+}
+
+.dialog-text-left {
+    margin-left: 10px;
+    color: black;
+}
+
+.dialog-text-right {
+    margin-right: 10px;
+    color: black;
+}
+
+#alphaHidden {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.5);
+    top: 0px;
+    left: 0px;
+    visibility: hidden;
+    z-index: 2;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script data-main="scripts/main" src="scripts/require.js"></script>
+        <link rel="stylesheet" href="style.css" />
+        <title>Pac-Man</title>
+    </head>
+    <body>
+        <div class="container">
+            <div id="items">
+                <p>Items</p>
+                <canvas id="spritesCanvas"></canvas>
+            </div>
+
+            <div id="map">
+                <p>Map (<input type="checkbox" name="automat" id="automat" /> - automat)</p>
+                <canvas id="mapCanvas"></canvas>
+            </div>
+        </div>
+
+        <div id="dialog">
+            <div class="dialog-item" id="dialog-undo">
+                <div class="dialog-text-left">Undo</div>
+                <div class="dialog-text-right">Ctrl + Z</div>
+            </div>
+            <div class="dialog-item" id="dialog-redo">
+                <div class="dialog-text-left">Redo</div>
+                <div class="dialog-text-right">Ctrl + Y</div>
+            </div>
+            <div class="dialog-item" id="dialog-cut">
+                <div class="dialog-text-left">Cut</div>
+                <div class="dialog-text-right">Ctrl + X</div>
+            </div>
+            <div class="dialog-item" id="dialog-copy">
+                <div class="dialog-text-left">Copy</div>
+                <div class="dialog-text-right">Ctrl + C</div>
+            </div>
+            <div class="dialog-item" id="dialog-paste">
+                <div class="dialog-text-left">Paste</div>
+                <div class="dialog-text-right">Ctrl + V</div>
+            </div>
+            <div class="dialog-item" id="dialog-delete">
+                <div class="dialog-text-left">Delete</div>
+                <div class="dialog-text-right">Del</div>
+            </div>
+            <div class="dialog-item" id="dialog-save">
+                <div class="dialog-text-left">Save to file</div>
+                <div class="dialog-text-right">Ctrl + S</div>
+            </div>
+            <div class="dialog-item" id="dialog-load">
+                <div class="dialog-text-left">Load data from file</div>
+                <div class="dialog-text-right">Ctrl + L</div>
+            </div>
+        </div>
+
+        <div id="alphaHidden"></div>
+    </body>
+</html>
