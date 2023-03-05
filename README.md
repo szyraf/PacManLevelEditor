@@ -3,6 +3,8 @@
 School project 2023<br>
 TS + HTML + CSS
 
+live demo: [https://szyraf.github.io/PacManLevelEditor/](https://szyraf.github.io/PacManLevelEditor/)
+
 ## To run:
 
 generate node_modules:<br>
