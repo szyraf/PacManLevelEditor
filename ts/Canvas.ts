@@ -18,6 +18,8 @@ export class Canvas implements CanvasElement {
     protected spritesImg: HTMLImageElement
     protected prevMouseX: number = -1
     protected prevMouseY: number = -1
+    protected mouseX: number = -1
+    protected mouseY: number = -1
     protected timeout: number
 
     public getCanvasSize(): CanvasSize {
@@ -81,12 +83,9 @@ export class Canvas implements CanvasElement {
         this.canvas = document.getElementById(canvasId) as HTMLCanvasElement
         this.canvas.width = this.CANVAS_SIZE.width
         this.canvas.height = this.CANVAS_SIZE.height
-        this.canvas.addEventListener('mousemove', this.mouseMove, false)
-        this.canvas.addEventListener('mouseleave', this.mouseLeave, false)
-        this.canvas.addEventListener('click', this.mouseClick, false)
         this.ctx = this.canvas.getContext('2d')
         this.spritesImg = new SpritesImage().getSpritesImg()
-        this.spritesImg.onload = () => this.drawImage()
+        this.spritesImg.onload = () => this.invokeDrawImage()
     }
 
     protected mouseMove = (e: MouseEvent) => {
@@ -95,23 +94,12 @@ export class Canvas implements CanvasElement {
         let y: number = Math.floor(pos.y / (CANVAS.spriteSize + CANVAS.borderSize * 2))
 
         if (x !== this.prevMouseX || y !== this.prevMouseY) {
-            clearTimeout(this.timeout)
-            this.timeout = setTimeout(() => this.drawImage(x, y), 0)
+            console.log('mouseMove', x, y)
+
+            this.invokeDrawImage(x, y)
             this.prevMouseX = x
             this.prevMouseY = y
         }
-    }
-
-    protected mouseLeave = (e: MouseEvent) => {
-        this.prevMouseX = -1
-        this.prevMouseY = -1
-        this.drawImage()
-    }
-
-    protected mouseClick = (e: MouseEvent) => {
-        let pos = this.getMousePos(this.canvas, e)
-        let x: number = Math.floor(pos.x / (CANVAS.spriteSize + CANVAS.borderSize * 2))
-        let y: number = Math.floor(pos.y / (CANVAS.spriteSize + CANVAS.borderSize * 2))
     }
 
     protected getMousePos(canvas: HTMLCanvasElement, evt: MouseEvent) {
@@ -123,6 +111,11 @@ export class Canvas implements CanvasElement {
             x: (evt.clientX - rect.left) * scaleX,
             y: (evt.clientY - rect.top) * scaleY
         }
+    }
+
+    protected invokeDrawImage(activeX: number = -1, activeY: number = -1) {
+        clearTimeout(this.timeout)
+        this.timeout = setTimeout(() => this.drawImage(activeX, activeY), 0)
     }
 
     protected drawImage(activeX: number = -1, activeY: number = -1) {
@@ -137,6 +130,38 @@ export class Canvas implements CanvasElement {
                 this.drawEmptySprite(x, y, active)
             }
         }
+    }
+
+    protected drawEmptySprite(x: number, y: number, active: boolean = false) {
+        if (active) {
+            this.ctx.globalAlpha = 1
+        } else {
+            this.ctx.globalAlpha = 0.5
+        }
+
+        this.ctx.setLineDash([2, 2])
+        this.ctx.strokeStyle = active ? CANVAS.borderHighlightColor : CANVAS.borderDefaultColor
+        this.ctx.lineWidth = CANVAS.borderSize
+        this.ctx.strokeRect(
+            x * CANVAS.spriteSize + CANVAS.borderSize * (x * 2),
+            y * CANVAS.spriteSize + CANVAS.borderSize * (y * 2),
+            CANVAS.spriteSize + CANVAS.borderSize * 2,
+            CANVAS.spriteSize + CANVAS.borderSize * 2
+        )
+    }
+
+    protected mouseLeave = (e: MouseEvent) => {
+        console.log('aaaaaaaa')
+
+        this.prevMouseX = -1
+        this.prevMouseY = -1
+        this.invokeDrawImage()
+    }
+
+    protected mouseClick = (e: MouseEvent) => {
+        let pos = this.getMousePos(this.canvas, e)
+        let x: number = Math.floor(pos.x / (CANVAS.spriteSize + CANVAS.borderSize * 2))
+        let y: number = Math.floor(pos.y / (CANVAS.spriteSize + CANVAS.borderSize * 2))
     }
 
     protected drawSprite(x: number, y: number, spriteX: number, spriteY: number, active: boolean = false) {
@@ -157,24 +182,6 @@ export class Canvas implements CanvasElement {
             CANVAS.spriteSize,
             CANVAS.spriteSize
         )
-        this.ctx.setLineDash([2, 2])
-        this.ctx.strokeStyle = active ? CANVAS.borderHighlightColor : CANVAS.borderDefaultColor
-        this.ctx.lineWidth = CANVAS.borderSize
-        this.ctx.strokeRect(
-            x * CANVAS.spriteSize + CANVAS.borderSize * (x * 2),
-            y * CANVAS.spriteSize + CANVAS.borderSize * (y * 2),
-            CANVAS.spriteSize + CANVAS.borderSize * 2,
-            CANVAS.spriteSize + CANVAS.borderSize * 2
-        )
-    }
-
-    protected drawEmptySprite(x: number, y: number, active: boolean = false) {
-        if (active) {
-            this.ctx.globalAlpha = 1
-        } else {
-            this.ctx.globalAlpha = 0.5
-        }
-
         this.ctx.setLineDash([2, 2])
         this.ctx.strokeStyle = active ? CANVAS.borderHighlightColor : CANVAS.borderDefaultColor
         this.ctx.lineWidth = CANVAS.borderSize
