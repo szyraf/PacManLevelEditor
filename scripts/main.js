@@ -29,7 +29,8 @@ define("dimensions", ["require", "exports"], function (require, exports) {
         spriteSize: 25,
         borderSize: 2,
         borderDefaultColor: '#ffffff',
-        borderHighlightColor: '#ff0000'
+        borderHighlightColor: '#ff0000',
+        borderPasteColor: '#00ff00'
     };
     exports.SPRITES_CANVAS = {
         numberOfSpritesX: 16,
@@ -83,14 +84,18 @@ define("Canvas", ["require", "exports", "dimensions", "SpritesImage"], function 
                 var x = Math.floor(pos.x / (dimensions_1.CANVAS.spriteSize + dimensions_1.CANVAS.borderSize * 2));
                 var y = Math.floor(pos.y / (dimensions_1.CANVAS.spriteSize + dimensions_1.CANVAS.borderSize * 2));
                 if (x !== _this.prevMouseX || y !== _this.prevMouseY) {
-                    console.log('mouseMove', x, y);
                     _this.invokeDrawImage(x, y);
                     _this.prevMouseX = x;
                     _this.prevMouseY = y;
                 }
             };
+            this.save = function () {
+                alert('save');
+            };
+            this.load = function () {
+                alert('load');
+            };
             this.mouseLeave = function (e) {
-                console.log('aaaaaaaa');
                 _this.prevMouseX = -1;
                 _this.prevMouseY = -1;
                 _this.invokeDrawImage();
@@ -110,9 +115,6 @@ define("Canvas", ["require", "exports", "dimensions", "SpritesImage"], function 
         }
         Canvas.prototype.getCanvasSize = function () {
             return this.CANVAS_SIZE;
-        };
-        Canvas.prototype.setCanvasSize = function (CANVAS_SIZE) {
-            this.CANVAS_SIZE = CANVAS_SIZE;
         };
         Canvas.prototype.getCanvas = function () {
             return this.canvas;
@@ -266,11 +268,16 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
         function MapCanvas(canvasId, CANVAS_SIZE) {
             var _this = _super.call(this, canvasId, CANVAS_SIZE) || this;
             _this.selectionMap = [];
+            _this.archivedMaps = [];
+            _this.archivedMapsIndex = 0;
             _this.map = [];
+            _this.copiedMap = [];
+            _this.pasteMode = false;
+            _this.pasteTopLeftCorner = { x: -1, y: -1 };
             _this.isMouseDown = false;
             _this.startMouseDownX = -1;
             _this.startMouseDownY = -1;
-            _this.keyboard = { ctrl: false };
+            _this.keyboard = { ctrl: false, z: false, y: false, c: false, x: false, v: false, esc: false, s: false, l: false };
             _this.isCheckboxChecked = false;
             _this.mouseMove = function (e) {
                 var pos = _this.getMousePos(_this.canvas, e);
@@ -283,32 +290,37 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                 }
             };
             _this.mouseDown = function (e) {
-                console.log('mouseDown');
-                if (!_this.keyboard.ctrl) {
-                    _this.selectionMap = _this.createEmptyMap();
-                }
-                _this.isMouseDown = true;
-                var pos = _this.getMousePos(_this.canvas, e);
-                _this.startMouseDownX = Math.floor(pos.x / (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2));
-                _this.startMouseDownY = Math.floor(pos.y / (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2));
-                _this.invokeDrawImage();
-            };
-            _this.mouseUp = function (e) {
-                if (_this.isMouseDown) {
-                    var x1 = Math.min(_this.startMouseDownX, _this.prevMouseX);
-                    var y1 = Math.min(_this.startMouseDownY, _this.prevMouseY);
-                    var x2 = Math.max(_this.startMouseDownX, _this.prevMouseX);
-                    var y2 = Math.max(_this.startMouseDownY, _this.prevMouseY);
-                    for (var y = y1; y <= y2; y++) {
-                        for (var x = x1; x <= x2; x++) {
-                            _this.selectionMap[y][x] = _this.selectionMap[y][x] === 0 ? 1 : 0;
+                if (e.which === 1 || e.button === 0) {
+                    if (!_this.pasteMode) {
+                        if (!_this.keyboard.ctrl) {
+                            _this.selectionMap = _this.createEmptyMap();
                         }
+                        _this.isMouseDown = true;
+                        var pos = _this.getMousePos(_this.canvas, e);
+                        _this.startMouseDownX = Math.floor(pos.x / (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2));
+                        _this.startMouseDownY = Math.floor(pos.y / (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2));
+                        _this.invokeDrawImage();
                     }
                 }
-                _this.isMouseDown = false;
-                _this.startMouseDownX = -1;
-                _this.startMouseDownY = -1;
-                _this.invokeDrawImage();
+            };
+            _this.mouseUp = function (e) {
+                if (e.which === 1 || e.button === 0) {
+                    if (_this.isMouseDown) {
+                        var x1 = Math.min(_this.startMouseDownX, _this.prevMouseX);
+                        var y1 = Math.min(_this.startMouseDownY, _this.prevMouseY);
+                        var x2 = Math.max(_this.startMouseDownX, _this.prevMouseX);
+                        var y2 = Math.max(_this.startMouseDownY, _this.prevMouseY);
+                        for (var y = y1; y <= y2; y++) {
+                            for (var x = x1; x <= x2; x++) {
+                                _this.selectionMap[y][x] = _this.selectionMap[y][x] === 0 ? 1 : 0;
+                            }
+                        }
+                    }
+                    _this.isMouseDown = false;
+                    _this.startMouseDownX = -1;
+                    _this.startMouseDownY = -1;
+                    _this.invokeDrawImage();
+                }
             };
             _this.mouseLeave = function (e) {
                 if (!_this.isMouseDown) {
@@ -318,17 +330,202 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                     _this.invokeDrawImage();
                 }
             };
+            _this.mouseClick = function (e) {
+                var pos = _this.getMousePos(_this.canvas, e);
+                var clickX = Math.floor(pos.x / (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2));
+                var clickY = Math.floor(pos.y / (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2));
+                if (_this.pasteMode) {
+                    for (var y = 0; y < _this.CANVAS_SIZE.numberOfSpritesY; y++) {
+                        for (var x = 0; x < _this.CANVAS_SIZE.numberOfSpritesX; x++) {
+                            var copiedMapX = x - _this.prevMouseX + _this.pasteTopLeftCorner.x;
+                            var copiedMapY = y - _this.prevMouseY + _this.pasteTopLeftCorner.y;
+                            var isGood = true;
+                            if (copiedMapX < 0 || copiedMapY < 0 || copiedMapX >= _this.CANVAS_SIZE.numberOfSpritesX || copiedMapY >= _this.CANVAS_SIZE.numberOfSpritesY) {
+                                isGood = false;
+                            }
+                            if (isGood) {
+                                if (_this.copiedMap[copiedMapY][copiedMapX] !== 0) {
+                                    _this.map[y][x] = _this.copiedMap[copiedMapY][copiedMapX];
+                                }
+                            }
+                        }
+                    }
+                    _this.pasteMode = false;
+                    _this.selectionMap = _this.createEmptyMap();
+                }
+            };
             _this.keyDown = function (e) {
                 if (e.keyCode === 17 || e.metaKey) {
                     _this.keyboard.ctrl = true;
                 }
-                console.log(_this.keyboard);
+                else {
+                    switch (e.keyCode) {
+                        case 90:
+                            _this.keyboard.z = true;
+                            break;
+                        case 89:
+                            _this.keyboard.y = true;
+                            break;
+                        case 46:
+                            _this["delete"]();
+                            break;
+                        case 67:
+                            _this.keyboard.c = true;
+                            break;
+                        case 88:
+                            _this.keyboard.x = true;
+                            break;
+                        case 86:
+                            _this.keyboard.v = true;
+                            break;
+                        case 27:
+                            _this.keyboard.esc = true;
+                            break;
+                        case 83:
+                            _this.keyboard.s = true;
+                            break;
+                        case 76:
+                            _this.keyboard.l = true;
+                            break;
+                    }
+                }
+                _this.shortcuts();
+            };
+            _this["delete"] = function () {
+                var isDeleted = false;
+                for (var y = 0; y < _this.CANVAS_SIZE.numberOfSpritesY; y++) {
+                    for (var x = 0; x < _this.CANVAS_SIZE.numberOfSpritesX; x++) {
+                        if (_this.selectionMap[y][x] === 1) {
+                            _this.map[y][x] = 0;
+                            isDeleted = true;
+                        }
+                    }
+                }
+                if (isDeleted) {
+                    _this.updateArchivedMaps();
+                }
+                _this.selectionMap = _this.createEmptyMap();
+                _this.invokeDrawImage();
+            };
+            _this.updateArchivedMaps = function () {
+                if (_this.archivedMapsIndex < _this.archivedMaps.length - 1) {
+                    _this.archivedMaps.splice(_this.archivedMapsIndex + 1, _this.archivedMaps.length - _this.archivedMapsIndex);
+                }
+                _this.archivedMaps.push(JSON.parse(JSON.stringify(_this.map)));
+                _this.archivedMapsIndex = _this.archivedMaps.length - 1;
+            };
+            _this.shortcuts = function () {
+                if (_this.keyboard.ctrl && _this.keyboard.z) {
+                    _this.undo();
+                }
+                else if (_this.keyboard.ctrl && _this.keyboard.y) {
+                    _this.redo();
+                }
+                else if (_this.keyboard.ctrl && _this.keyboard.c) {
+                    _this.copy();
+                }
+                else if (_this.keyboard.ctrl && _this.keyboard.x) {
+                    _this.cut();
+                }
+                else if (_this.keyboard.ctrl && _this.keyboard.v) {
+                    _this.paste();
+                }
+                else if (_this.keyboard.esc) {
+                    _this.selectionMap = _this.createEmptyMap();
+                    _this.pasteMode = false;
+                    _this.invokeDrawImage();
+                }
+                else if (_this.keyboard.ctrl && _this.keyboard.s) {
+                    _this.save();
+                }
+                else if (_this.keyboard.ctrl && _this.keyboard.l) {
+                    _this.load();
+                }
+                _this.keyboard.z = false;
+                _this.keyboard.y = false;
+                _this.keyboard.c = false;
+                _this.keyboard.x = false;
+                _this.keyboard.v = false;
+                _this.keyboard.esc = false;
+                _this.keyboard.s = false;
+                _this.keyboard.l = false;
+            };
+            _this.undo = function () {
+                _this.selectionMap = _this.createEmptyMap();
+                if (_this.archivedMapsIndex > 0) {
+                    _this.archivedMapsIndex--;
+                    _this.map = JSON.parse(JSON.stringify(_this.archivedMaps[_this.archivedMapsIndex]));
+                    _this.invokeDrawImage();
+                }
+            };
+            _this.redo = function () {
+                _this.selectionMap = _this.createEmptyMap();
+                if (_this.archivedMapsIndex > -1) {
+                    if (_this.archivedMaps.length > _this.archivedMapsIndex + 1) {
+                        _this.archivedMapsIndex++;
+                        _this.map = _this.archivedMaps[_this.archivedMapsIndex];
+                        _this.invokeDrawImage();
+                    }
+                }
+            };
+            _this.copy = function () {
+                _this.copiedMap = _this.createEmptyMap();
+                for (var y = 0; y < _this.CANVAS_SIZE.numberOfSpritesY; y++) {
+                    for (var x = 0; x < _this.CANVAS_SIZE.numberOfSpritesX; x++) {
+                        if (_this.selectionMap[y][x] === 1) {
+                            _this.copiedMap[y][x] = _this.map[y][x];
+                        }
+                    }
+                }
+                _this.findTopLeftPixel();
+            };
+            _this.findTopLeftPixel = function () {
+                var topPixel = -1;
+                var leftPixel = -1;
+                var topLeftPixel = { x: -1, y: -1 };
+                for (var y = 0; y < _this.CANVAS_SIZE.numberOfSpritesY; y++) {
+                    for (var x = 0; x < _this.CANVAS_SIZE.numberOfSpritesX; x++) {
+                        if (_this.selectionMap[y][x] === 1) {
+                            if (topPixel === -1) {
+                                topPixel = y;
+                            }
+                        }
+                    }
+                }
+                for (var x = 0; x < _this.CANVAS_SIZE.numberOfSpritesX; x++) {
+                    for (var y = 0; y < _this.CANVAS_SIZE.numberOfSpritesY; y++) {
+                        if (_this.selectionMap[y][x] === 1) {
+                            if (leftPixel === -1) {
+                                leftPixel = x;
+                            }
+                        }
+                    }
+                }
+                topLeftPixel.x = leftPixel;
+                topLeftPixel.y = topPixel;
+                _this.pasteTopLeftCorner = topLeftPixel;
+            };
+            _this.cut = function () {
+                _this.copy();
+                _this["delete"]();
+            };
+            _this.paste = function () {
+                var isEmpty = true;
+                for (var y = 0; y < _this.CANVAS_SIZE.numberOfSpritesY; y++) {
+                    for (var x = 0; x < _this.CANVAS_SIZE.numberOfSpritesX; x++) {
+                        if (_this.copiedMap[y][x] !== 0) {
+                            isEmpty = false;
+                        }
+                    }
+                }
+                if (!isEmpty) {
+                    _this.pasteMode = true;
+                }
             };
             _this.keyUp = function (e) {
                 if (e.keyCode === 17 || e.metaKey) {
                     _this.keyboard.ctrl = false;
                 }
-                console.log(_this.keyboard);
             };
             _this.setSprite = function (spriteX, spriteY) {
                 var lastSelection = { x: -1, y: -1 };
@@ -340,6 +537,9 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                             _this.map[y][x] = { spriteX: spriteX, spriteY: spriteY };
                         }
                     }
+                }
+                if (lastSelection.x !== -1) {
+                    _this.updateArchivedMaps();
                 }
                 if (_this.isCheckboxChecked) {
                     if (lastSelection.x !== -1 && lastSelection.y !== -1) {
@@ -355,6 +555,8 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
             };
             _this.selectionMap = _this.createEmptyMap();
             _this.map = _this.createEmptyMap();
+            _this.copiedMap = _this.createEmptyMap();
+            _this.archivedMaps.push(JSON.parse(JSON.stringify(_this.map)));
             _this.canvas.addEventListener('mousemove', _this.mouseMove, false);
             _this.canvas.addEventListener('mousedown', _this.mouseDown, false);
             document.addEventListener('mouseup', _this.mouseUp, false);
@@ -411,7 +613,20 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                     if (this.selectionMap[y][x] === 1) {
                         active = true;
                     }
-                    if (this.map[y][x] !== 0) {
+                    // use this.pasteTopLeftCorner and this.prevMouseX, this.prevMouseY
+                    if (this.pasteMode) {
+                        active = false;
+                    }
+                    var copiedMapX = x - this.prevMouseX + this.pasteTopLeftCorner.x;
+                    var copiedMapY = y - this.prevMouseY + this.pasteTopLeftCorner.y;
+                    var isGood = true;
+                    if (copiedMapX < 0 || copiedMapY < 0 || copiedMapX >= this.CANVAS_SIZE.numberOfSpritesX || copiedMapY >= this.CANVAS_SIZE.numberOfSpritesY) {
+                        isGood = false;
+                    }
+                    if (isGood && this.pasteMode && this.copiedMap[copiedMapY][copiedMapX] !== 0) {
+                        this.drawSprite(x, y, this.copiedMap[copiedMapY][copiedMapX].spriteX, this.copiedMap[copiedMapY][copiedMapX].spriteY, false, true);
+                    }
+                    else if (this.map[y][x] !== 0) {
                         this.drawSprite(x, y, this.map[y][x].spriteX, this.map[y][x].spriteY, active);
                     }
                     else {
@@ -424,8 +639,9 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                 this.ctx.fillRect(area.x * (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2), area.y * (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2), area.width * (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2), area.height * (dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2));
             }
         };
-        MapCanvas.prototype.drawSprite = function (x, y, spriteX, spriteY, active) {
+        MapCanvas.prototype.drawSprite = function (x, y, spriteX, spriteY, active, pasted) {
             if (active === void 0) { active = false; }
+            if (pasted === void 0) { pasted = false; }
             if (active) {
                 this.ctx.globalAlpha = 0.5;
             }
@@ -434,7 +650,15 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
             }
             this.ctx.drawImage(this.spritesImg, spriteX * dimensions_3.IMAGE.spriteSize + dimensions_3.IMAGE.borderSize * (spriteX + 1), spriteY * dimensions_3.IMAGE.spriteSize + dimensions_3.IMAGE.borderSize * (spriteY + 1), dimensions_3.IMAGE.spriteSize, dimensions_3.IMAGE.spriteSize, x * dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * (x * 2 + 1), y * dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * (y * 2 + 1), dimensions_3.CANVAS.spriteSize, dimensions_3.CANVAS.spriteSize);
             this.ctx.setLineDash([2, 2]);
-            this.ctx.strokeStyle = active ? dimensions_3.CANVAS.borderHighlightColor : dimensions_3.CANVAS.borderDefaultColor;
+            if (pasted) {
+                this.ctx.strokeStyle = dimensions_3.CANVAS.borderPasteColor;
+            }
+            else if (active) {
+                this.ctx.strokeStyle = dimensions_3.CANVAS.borderHighlightColor;
+            }
+            else {
+                this.ctx.strokeStyle = dimensions_3.CANVAS.borderDefaultColor;
+            }
             this.ctx.lineWidth = dimensions_3.CANVAS.borderSize;
             this.ctx.strokeRect(x * dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * (x * 2), y * dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * (y * 2), dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2, dimensions_3.CANVAS.spriteSize + dimensions_3.CANVAS.borderSize * 2);
         };
@@ -456,7 +680,6 @@ define("main", ["require", "exports", "SpritesCanvas", "MapCanvas", "dimensions"
     mapDiv.style.width = dimensions_4.MAP_CANVAS.width + 'px';
     mapDiv.style.height = dimensions_4.MAP_CANVAS.height + 'px';
     mapDiv.style.visibility = 'visible';
-    // checkbox id="automat"
     var automat = document.getElementById('automat');
     automat.addEventListener('change', function () {
         if (automat.checked) {
@@ -465,5 +688,59 @@ define("main", ["require", "exports", "SpritesCanvas", "MapCanvas", "dimensions"
         else {
             exports.mapCanvas.setIsCheckboxChecked(false);
         }
+    });
+    var dialog = document.getElementById('dialog');
+    var alphaHidden = document.getElementById('alphaHidden');
+    alphaHidden.addEventListener('click', function () {
+        hideDialog();
+    });
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    });
+    var mouseDown = function (e) {
+        if (e.which === 3 || e.button === 2) {
+            showDialog();
+        }
+    };
+    document.addEventListener('mousedown', mouseDown, false);
+    function hideDialog() {
+        dialog.style.visibility = 'hidden';
+        alphaHidden.style.visibility = 'hidden';
+    }
+    function showDialog() {
+        dialog.style.visibility = 'visible';
+        alphaHidden.style.visibility = 'visible';
+    }
+    document.getElementById('dialog-undo').addEventListener('click', function () {
+        exports.mapCanvas.undo();
+        hideDialog();
+    });
+    document.getElementById('dialog-redo').addEventListener('click', function () {
+        exports.mapCanvas.redo();
+        hideDialog();
+    });
+    document.getElementById('dialog-cut').addEventListener('click', function () {
+        exports.mapCanvas.cut();
+        hideDialog();
+    });
+    document.getElementById('dialog-copy').addEventListener('click', function () {
+        exports.mapCanvas.copy();
+        hideDialog();
+    });
+    document.getElementById('dialog-paste').addEventListener('click', function () {
+        exports.mapCanvas.paste();
+        hideDialog();
+    });
+    document.getElementById('dialog-delete').addEventListener('click', function () {
+        exports.mapCanvas["delete"]();
+        hideDialog();
+    });
+    document.getElementById('dialog-save').addEventListener('click', function () {
+        exports.mapCanvas.save();
+        hideDialog();
+    });
+    document.getElementById('dialog-load').addEventListener('click', function () {
+        exports.mapCanvas.load();
+        hideDialog();
     });
 });
