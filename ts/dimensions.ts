@@ -21,13 +21,15 @@ interface CanvasSettings {
     borderSize: number
     borderDefaultColor: string
     borderHighlightColor: string
+    borderPasteColor: string
 }
 
 export const CANVAS: CanvasSettings = {
     spriteSize: 25,
     borderSize: 2,
     borderDefaultColor: '#ffffff',
-    borderHighlightColor: '#ff0000'
+    borderHighlightColor: '#ff0000',
+    borderPasteColor: '#00ff00'
 }
 
 export interface CanvasSize {

@@ -14,7 +14,6 @@ mapDiv.style.width = MAP_CANVAS.width + 'px'
 mapDiv.style.height = MAP_CANVAS.height + 'px'
 mapDiv.style.visibility = 'visible'
 
-// checkbox id="automat"
 let automat: HTMLInputElement = <HTMLInputElement>document.getElementById('automat')
 automat.addEventListener('change', () => {
     if (automat.checked) {
@@ -22,4 +21,73 @@ automat.addEventListener('change', () => {
     } else {
         mapCanvas.setIsCheckboxChecked(false)
     }
+})
+
+let dialog = document.getElementById('dialog')
+let alphaHidden = document.getElementById('alphaHidden')
+
+alphaHidden.addEventListener('click', () => {
+    hideDialog()
+})
+
+document.addEventListener('contextmenu', function (e) {
+    e.preventDefault()
+})
+
+let mouseDown = (e: MouseEvent) => {
+    if (e.which === 3 || e.button === 2) {
+        showDialog()
+    }
+}
+
+document.addEventListener('mousedown', mouseDown, false)
+
+function hideDialog() {
+    dialog.style.visibility = 'hidden'
+    alphaHidden.style.visibility = 'hidden'
+}
+
+function showDialog() {
+    dialog.style.visibility = 'visible'
+    alphaHidden.style.visibility = 'visible'
+}
+
+document.getElementById('dialog-undo').addEventListener('click', () => {
+    mapCanvas.undo()
+    hideDialog()
+})
+
+document.getElementById('dialog-redo').addEventListener('click', () => {
+    mapCanvas.redo()
+    hideDialog()
+})
+
+document.getElementById('dialog-cut').addEventListener('click', () => {
+    mapCanvas.cut()
+    hideDialog()
+})
+
+document.getElementById('dialog-copy').addEventListener('click', () => {
+    mapCanvas.copy()
+    hideDialog()
+})
+
+document.getElementById('dialog-paste').addEventListener('click', () => {
+    mapCanvas.paste()
+    hideDialog()
+})
+
+document.getElementById('dialog-delete').addEventListener('click', () => {
+    mapCanvas.delete()
+    hideDialog()
+})
+
+document.getElementById('dialog-save').addEventListener('click', () => {
+    mapCanvas.save()
+    hideDialog()
+})
+
+document.getElementById('dialog-load').addEventListener('click', () => {
+    mapCanvas.load()
+    hideDialog()
 })

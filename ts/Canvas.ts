@@ -12,7 +12,7 @@ interface CanvasElement {
 }
 
 export class Canvas implements CanvasElement {
-    protected CANVAS_SIZE: CanvasSize
+    protected readonly CANVAS_SIZE: CanvasSize
     protected canvas: HTMLCanvasElement
     protected ctx: CanvasRenderingContext2D
     protected spritesImg: HTMLImageElement
@@ -24,10 +24,6 @@ export class Canvas implements CanvasElement {
 
     public getCanvasSize(): CanvasSize {
         return this.CANVAS_SIZE
-    }
-
-    public setCanvasSize(CANVAS_SIZE: CanvasSize) {
-        this.CANVAS_SIZE = CANVAS_SIZE
     }
 
     public getCanvas(): HTMLCanvasElement {
@@ -94,8 +90,6 @@ export class Canvas implements CanvasElement {
         let y: number = Math.floor(pos.y / (CANVAS.spriteSize + CANVAS.borderSize * 2))
 
         if (x !== this.prevMouseX || y !== this.prevMouseY) {
-            console.log('mouseMove', x, y)
-
             this.invokeDrawImage(x, y)
             this.prevMouseX = x
             this.prevMouseY = y
@@ -150,9 +144,15 @@ export class Canvas implements CanvasElement {
         )
     }
 
-    protected mouseLeave = (e: MouseEvent) => {
-        console.log('aaaaaaaa')
+    public save = () => {
+        alert('save')
+    }
 
+    public load = () => {
+        alert('load')
+    }
+
+    protected mouseLeave = (e: MouseEvent) => {
         this.prevMouseX = -1
         this.prevMouseY = -1
         this.invokeDrawImage()
