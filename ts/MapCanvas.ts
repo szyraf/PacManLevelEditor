@@ -243,39 +243,40 @@ export class MapCanvas extends Canvas {
     }
 
     protected keyDown = (e: KeyboardEvent) => {
-        if (e.keyCode === 17 || e.metaKey) {
+        if (e.keyCode === 17 || e.metaKey || e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 93) {
             this.keyboard.ctrl = true
-        } else {
-            switch (e.keyCode) {
-                case 90:
-                    this.keyboard.z = true
-                    break
-                case 89:
-                    this.keyboard.y = true
-                    break
-                case 46:
-                    this.delete()
-                    break
-                case 67:
-                    this.keyboard.c = true
-                    break
-                case 88:
-                    this.keyboard.x = true
-                    break
-                case 86:
-                    this.keyboard.v = true
-                    break
-                case 27:
-                    this.keyboard.esc = true
-                    break
-                case 83:
-                    this.keyboard.s = true
-                    break
-                case 76:
-                    this.keyboard.l = true
-                    break
-            }
         }
+
+        switch (e.keyCode) {
+            case 90:
+                this.keyboard.z = true
+                break
+            case 89:
+                this.keyboard.y = true
+                break
+            case 46:
+                this.delete()
+                break
+            case 67:
+                this.keyboard.c = true
+                break
+            case 88:
+                this.keyboard.x = true
+                break
+            case 86:
+                this.keyboard.v = true
+                break
+            case 27:
+                this.keyboard.esc = true
+                break
+            case 83:
+                this.keyboard.s = true
+                break
+            case 76:
+                this.keyboard.l = true
+                break
+        }
+
         this.shortcuts()
     }
 
@@ -459,7 +460,7 @@ export class MapCanvas extends Canvas {
     }
 
     protected keyUp = (e: KeyboardEvent) => {
-        if (e.keyCode === 17 || e.metaKey) {
+        if (e.keyCode === 17 || e.metaKey || e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 93) {
             this.keyboard.ctrl = false
         }
     }
