@@ -346,6 +346,7 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                     }
                     _this.pasteMode = false;
                     _this.selectionMap = _this.createEmptyMap();
+                    _this.updateArchivedMaps();
                 }
             };
             _this.keyDown = function (e) {
@@ -405,6 +406,9 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                 }
                 _this.archivedMaps.push(JSON.parse(JSON.stringify(_this.map)));
                 _this.archivedMapsIndex = _this.archivedMaps.length - 1;
+                console.log('aaaa');
+                console.log(_this.archivedMaps);
+                console.log(_this.archivedMapsIndex);
             };
             _this.shortcuts = function () {
                 if (_this.keyboard.ctrl && _this.keyboard.z) {
@@ -455,7 +459,7 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                 if (_this.archivedMapsIndex > -1) {
                     if (_this.archivedMaps.length > _this.archivedMapsIndex + 1) {
                         _this.archivedMapsIndex++;
-                        _this.map = _this.archivedMaps[_this.archivedMapsIndex];
+                        _this.map = JSON.parse(JSON.stringify(_this.archivedMaps[_this.archivedMapsIndex]));
                         _this.invokeDrawImage();
                     }
                 }
