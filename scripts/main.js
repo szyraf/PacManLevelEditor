@@ -349,39 +349,37 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                 }
             };
             _this.keyDown = function (e) {
-                if (e.keyCode === 17 || e.metaKey) {
+                if (e.keyCode === 17 || e.metaKey || e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 93) {
                     _this.keyboard.ctrl = true;
                 }
-                else {
-                    switch (e.keyCode) {
-                        case 90:
-                            _this.keyboard.z = true;
-                            break;
-                        case 89:
-                            _this.keyboard.y = true;
-                            break;
-                        case 46:
-                            _this["delete"]();
-                            break;
-                        case 67:
-                            _this.keyboard.c = true;
-                            break;
-                        case 88:
-                            _this.keyboard.x = true;
-                            break;
-                        case 86:
-                            _this.keyboard.v = true;
-                            break;
-                        case 27:
-                            _this.keyboard.esc = true;
-                            break;
-                        case 83:
-                            _this.keyboard.s = true;
-                            break;
-                        case 76:
-                            _this.keyboard.l = true;
-                            break;
-                    }
+                switch (e.keyCode) {
+                    case 90:
+                        _this.keyboard.z = true;
+                        break;
+                    case 89:
+                        _this.keyboard.y = true;
+                        break;
+                    case 46:
+                        _this["delete"]();
+                        break;
+                    case 67:
+                        _this.keyboard.c = true;
+                        break;
+                    case 88:
+                        _this.keyboard.x = true;
+                        break;
+                    case 86:
+                        _this.keyboard.v = true;
+                        break;
+                    case 27:
+                        _this.keyboard.esc = true;
+                        break;
+                    case 83:
+                        _this.keyboard.s = true;
+                        break;
+                    case 76:
+                        _this.keyboard.l = true;
+                        break;
                 }
                 _this.shortcuts();
             };
@@ -551,7 +549,7 @@ define("MapCanvas", ["require", "exports", "dimensions", "Canvas"], function (re
                 input.click();
             };
             _this.keyUp = function (e) {
-                if (e.keyCode === 17 || e.metaKey) {
+                if (e.keyCode === 17 || e.metaKey || e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 93) {
                     _this.keyboard.ctrl = false;
                 }
             };
