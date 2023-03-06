@@ -25,3 +25,8 @@ and open `localhost:3000`
 
 <img src="./screenshots/s1.png"/><br>
 <img src="./screenshots/s2.png"/>
+
+to deploy on github pages:<br>
+`git subtree split --prefix static -b gh-pages`
+`git push -f origin gh-pages:gh-pages`
+`git branch -D gh-pages`
