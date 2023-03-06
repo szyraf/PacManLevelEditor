@@ -239,6 +239,7 @@ export class MapCanvas extends Canvas {
             }
             this.pasteMode = false
             this.selectionMap = this.createEmptyMap()
+            this.updateArchivedMaps()
         }
     }
 
@@ -303,6 +304,10 @@ export class MapCanvas extends Canvas {
         }
         this.archivedMaps.push(JSON.parse(JSON.stringify(this.map)))
         this.archivedMapsIndex = this.archivedMaps.length - 1
+
+        console.log('aaaa')
+        console.log(this.archivedMaps)
+        console.log(this.archivedMapsIndex)
     }
 
     private shortcuts = () => {
@@ -351,7 +356,7 @@ export class MapCanvas extends Canvas {
         if (this.archivedMapsIndex > -1) {
             if (this.archivedMaps.length > this.archivedMapsIndex + 1) {
                 this.archivedMapsIndex++
-                this.map = this.archivedMaps[this.archivedMapsIndex]
+                this.map = JSON.parse(JSON.stringify(this.archivedMaps[this.archivedMapsIndex]))
                 this.invokeDrawImage()
             }
         }
